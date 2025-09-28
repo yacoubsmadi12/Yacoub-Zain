@@ -1,11 +1,12 @@
 'use server';
 
 import 'server-only';
-import { adminDb } from '@/lib/firebase/admin-config';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 import type { Word } from '@/types';
 
 /**
- * Fetches the word of the day for a given department using the Firebase Admin SDK.
+ * Fetches the word of the day for a given department.
  * This is a Server Action and will only execute on the server.
  */
 export async function getWordOfTheDayAction(department: string): Promise<Word | null> {
@@ -13,12 +14,13 @@ export async function getWordOfTheDayAction(department: string): Promise<Word | 
 
   try {
     const fetchWord = async (dept: string) => {
-      const snapshot = await adminDb
-        .collection('words')
-        .where('department', '==', dept)
-        .where('date', '==', today)
-        .limit(1)
-        .get();
+      const q = query(
+        collection(db, 'words'),
+        where('department', '==', dept),
+        where('date', '==', today),
+        limit(1)
+      );
+      const snapshot = await getDocs(q);
 
       if (!snapshot.empty) {
         const doc = snapshot.docs[0];

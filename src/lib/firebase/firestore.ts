@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, addDoc } from 'firebase/firestore';
 import { db } from './config';
 import type { UserProfile, Word } from '@/types';
 
