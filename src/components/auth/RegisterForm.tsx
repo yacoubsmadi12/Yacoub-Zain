@@ -17,8 +17,8 @@ import { Loader2 } from 'lucide-react';
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email.' }).refine(
-    (email) => email.endsWith('@zain.com'),
-    { message: 'Only @zain.com emails are allowed.' }
+    (email) => email.endsWith('@jo.zain.com'),
+    { message: 'Only @jo.zain.com emails are allowed.' }
   ),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
   department: z.string({ required_error: "Please select a department." }),
@@ -90,7 +90,7 @@ export function RegisterForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="name@zain.com" {...field} />
+                <Input placeholder="name@jo.zain.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
