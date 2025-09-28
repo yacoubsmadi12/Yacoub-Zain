@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "word_of_the_day_bg",
+      "description": "Abstract background for the word of the day card.",
+      "imageUrl": "https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhYnN0cmFjdCUyMHRleHR1cmV8ZW58MHx8fHwxNzU5MDA1NjE0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract texture"
+    },
+    {
+      "id": "profile_avatar",
+      "description": "Default user profile avatar.",
+      "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTkwMTExOTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "department_badge_finance",
+      "description": "Badge for the Finance department.",
+      "imageUrl": "https://images.unsplash.com/photo-1590707947008-e018277404a5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxvZmZpY2UlMjBtb25leXxlbnwwfHx8fDE3NTkwODUxMDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "office money"
+    },
+    {
+      "id": "department_badge_hr",
+      "description": "Badge for the HR department.",
+      "imageUrl": "https://images.unsplash.com/photo-1677078610152-8a627d8ced8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGVvcGxlJTIwdGVhbXxlbnwwfHx8fDE3NTkwMjE1MTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "people team"
+    },
+    {
+      "id": "department_badge_engineering",
+      "description": "Badge for the Engineering department.",
+      "imageUrl": "https://images.unsplash.com/photo-1595623654300-b27329804025?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0ZWNobm9sb2d5JTIwY29kZXxlbnwwfHx8fDE3NTg5Nzg0OTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "technology code"
+    }
+  ]
 }

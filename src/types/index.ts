@@ -1,0 +1,23 @@
+import type { User as FirebaseUser } from 'firebase/auth';
+
+export interface UserProfile {
+  uid: string;
+  email: string | null;
+  name: string | null;
+  department: string | null;
+  isAdmin?: boolean;
+}
+
+export interface AppUser extends FirebaseUser {
+  profile?: UserProfile;
+}
+
+export interface Word {
+  id: string;
+  word: string;
+  definition: string;
+  examples: string[];
+  pronunciation?: string;
+  department: string;
+  date: string; // YYYY-MM-DD
+}
