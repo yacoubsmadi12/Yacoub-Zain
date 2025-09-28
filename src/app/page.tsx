@@ -43,6 +43,11 @@ export default function HomePage() {
           <p className="text-lg text-muted-foreground">
             ZainLingo Lite is designed to enhance communication across departments. By providing daily, department-specific vocabulary, we aim to break down jargon barriers and foster a more collaborative environment.
           </p>
+          <div className="text-center md:text-left">
+            <Link href="/about" className="font-semibold text-primary hover:underline">
+              Learn more about how it works &rarr;
+            </Link>
+          </div>
         </div>
         <div>
           <AuthCard
