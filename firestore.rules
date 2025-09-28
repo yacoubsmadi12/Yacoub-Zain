@@ -1,30 +1,24 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow authenticated users to read their own profile and word data.
-    // Allow admins to perform admin actions.
-    match /{document=**} {
-      allow read: if request.auth != null;
-    }
-
-    // Users can create and update their own profile.
+    // Users can read and update their own profile
     match /users/{userId} {
-      allow read, update, create: if request.auth != null && request.auth.uid == userId;
+      allow read, update: if request.auth.uid == userId;
     }
-
-    // Words can be read by any authenticated user.
-    // Only admins (a future concept) can create/update/delete words for now.
-    // Let's be permissive for now to ensure functionality.
+    
+    // Users can read words if they are authenticated
     match /words/{wordId} {
       allow read: if request.auth != null;
-      allow create, update, delete: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    // Admin logs can only be created by admins.
-    match /admin_logs/{logId} {
-       allow create: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    // Admins can create words and log actions
+    match /words/{document=**} {
+      allow create: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    match /admin_logs/{document=**} {
+      allow create: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
   }
 }

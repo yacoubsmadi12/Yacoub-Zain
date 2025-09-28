@@ -1,18 +1,2 @@
-import 'dotenv/config';
-
-const config = {
-  firebase: {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  },
-};
-
-if (!config.firebase.projectId) {
-  throw new Error('Missing FIREBASE_PROJECT_ID in .env');
-}
-
-export default config;
+// This file is no longer needed and can be removed.
+// The configuration is now handled directly in /src/lib/firebase/config.ts
