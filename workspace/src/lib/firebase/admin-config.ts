@@ -1,4 +1,5 @@
 // src/lib/firebase/admin-config.ts
+import 'server-only';
 import admin from 'firebase-admin';
 import 'dotenv/config';
 
