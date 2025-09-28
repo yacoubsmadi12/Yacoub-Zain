@@ -1,6 +1,9 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, enableIndexedDbPersistence, type Firestore } from 'firebase/firestore';
+import { config } from 'dotenv';
+
+config();
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
