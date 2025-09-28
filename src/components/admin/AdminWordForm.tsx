@@ -24,7 +24,19 @@ const formSchema = z.object({
   examples: z.array(z.object({ value: z.string().min(5, { message: "Example must be at least 5 characters." }) })),
 });
 
-const departments = ["Finance", "Human Resources", "Engineering", "Marketing", "Sales", "General"];
+const departments = [
+    "Finance", 
+    "Human Resources", 
+    "Engineering", 
+    "Marketing", 
+    "Sales",
+    "Governance, Risk, and Compliance",
+    "Consumer Business",
+    "Legal and Regulatory",
+    "Technology & Digital Innovation",
+    "Corporate Communications & Sustainability",
+    "General"
+];
 
 export function AdminWordForm() {
   const { user } = useAuth();

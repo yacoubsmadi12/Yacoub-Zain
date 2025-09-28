@@ -20,7 +20,18 @@ const formSchema = z.object({
   department: z.string({ required_error: "Please select a department." }),
 });
 
-const departments = ["Finance", "Human Resources", "Engineering", "Marketing", "Sales"];
+const departments = [
+    "Finance", 
+    "Human Resources", 
+    "Engineering", 
+    "Marketing", 
+    "Sales",
+    "Governance, Risk, and Compliance",
+    "Consumer Business",
+    "Legal and Regulatory",
+    "Technology & Digital Innovation",
+    "Corporate Communications & Sustainability"
+];
 
 export default function SettingsPage() {
   const { user, refreshUserProfile } = useAuth();

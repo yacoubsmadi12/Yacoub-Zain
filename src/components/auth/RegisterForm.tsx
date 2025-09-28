@@ -24,7 +24,18 @@ const formSchema = z.object({
   department: z.string({ required_error: "Please select a department." }),
 });
 
-const departments = ["Finance", "Human Resources", "Engineering", "Marketing", "Sales"];
+const departments = [
+    "Finance", 
+    "Human Resources", 
+    "Engineering", 
+    "Marketing", 
+    "Sales",
+    "Governance, Risk, and Compliance",
+    "Consumer Business",
+    "Legal and Regulatory",
+    "Technology & Digital Innovation",
+    "Corporate Communications & Sustainability"
+];
 
 export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);

@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Briefcase, Building, Cpu, DollarSign, Megaphone, Users } from "lucide-react";
+import { Briefcase, Building, Cpu, DollarSign, Megaphone, Users, ShieldCheck, Store, Scale, BrainCircuit, Leaf } from "lucide-react";
 
 const departments = [
   { name: "Finance", icon: <DollarSign className="h-8 w-8 text-primary" /> },
@@ -7,6 +7,11 @@ const departments = [
   { name: "Engineering", icon: <Cpu className="h-8 w-8 text-primary" /> },
   { name: "Marketing", icon: <Megaphone className="h-8 w-8 text-primary" /> },
   { name: "Sales", icon: <Briefcase className="h-8 w-8 text-primary" /> },
+  { name: "Governance, Risk, and Compliance", icon: <ShieldCheck className="h-8 w-8 text-primary" /> },
+  { name: "Consumer Business", icon: <Store className="h-8 w-8 text-primary" /> },
+  { name: "Legal and Regulatory", icon: <Scale className="h-8 w-8 text-primary" /> },
+  { name: "Technology & Digital Innovation", icon: <BrainCircuit className="h-8 w-8 text-primary" /> },
+  { name: "Corp. Comms & Sustainability", icon: <Leaf className="h-8 w-8 text-primary" /> },
   { name: "General", icon: <Building className="h-8 w-8 text-primary" /> },
 ];
 
@@ -21,9 +26,9 @@ export function FeaturedDepartments() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {departments.map((dept) => (
             <Card key={dept.name} className="flex flex-col items-center justify-center p-6 hover:shadow-lg transition-shadow">
-              <CardContent className="p-0 flex flex-col items-center justify-center space-y-2">
+              <CardContent className="p-0 flex flex-col items-center justify-center space-y-2 text-center">
                 {dept.icon}
-                <p className="font-semibold">{dept.name}</p>
+                <p className="font-semibold text-sm">{dept.name}</p>
               </CardContent>
             </Card>
           ))}
