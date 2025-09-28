@@ -7,6 +7,7 @@ import { Loader2, Rocket } from 'lucide-react';
 import { AuthCard } from '@/components/auth/AuthCard';
 import { LoginForm } from '@/components/auth/LoginForm';
 import Link from 'next/link';
+import { FeaturedDepartments } from '@/components/landing/FeaturedDepartments';
 
 export default function HomePage() {
   const { user, loading } = useAuth();
@@ -29,8 +30,8 @@ export default function HomePage() {
 
   // If user is not logged in, show the landing page.
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="container mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 md:grid-cols-2">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+      <div className="container mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 md:grid-cols-2 py-12">
         <div className="space-y-6 text-center md:text-left">
           <div className="inline-flex items-center gap-3">
             <Rocket className="h-10 w-10 text-primary" />
@@ -60,6 +61,7 @@ export default function HomePage() {
           </AuthCard>
         </div>
       </div>
+      <FeaturedDepartments />
     </div>
   );
 }
