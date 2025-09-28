@@ -11,9 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { signInWithEmail, signInWithGoogle } from '@/lib/firebase/auth';
-import { GoogleSignInButton } from './GoogleSignInButton';
-import { Separator } from '@/components/ui/separator';
+import { signInWithEmail } from '@/lib/firebase/auth';
 import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
@@ -43,22 +41,6 @@ export function LoginForm() {
       toast({
         title: 'Login Failed',
         description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  
-  async function handleGoogleSignIn() {
-    setIsLoading(true);
-    try {
-      await signInWithGoogle();
-      router.push('/dashboard');
-    } catch (error: any) {
-      toast({
-        title: 'Google Sign-In Failed',
-        description: error.message === 'Firebase: Error (auth/popup-closed-by-user).' ? 'Popup closed before sign-in completed.' : error.message,
         variant: 'destructive',
       });
     } finally {
@@ -107,15 +89,6 @@ export function LoginForm() {
           </Button>
         </form>
       </Form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <Separator />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-        </div>
-      </div>
-      <GoogleSignInButton onClick={handleGoogleSignIn} disabled={isLoading} />
     </div>
   );
 }

@@ -16,7 +16,9 @@ export default function LoginPage() {
         </>
       }
     >
-      <LoginForm />
+      <div className="space-y-4">
+        <LoginForm />
+      </div>
     </AuthCard>
   );
 }

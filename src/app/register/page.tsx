@@ -16,7 +16,9 @@ export default function RegisterPage() {
         </>
       }
     >
-      <RegisterForm />
+       <div className="space-y-4">
+        <RegisterForm />
+       </div>
     </AuthCard>
   );
 }
