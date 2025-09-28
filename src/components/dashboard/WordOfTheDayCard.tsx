@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getWordOfTheDay } from '@/lib/firebase/firestore';
+import { getWordOfTheDayAction } from '@/app/actions/get-word-of-the-day-action';
 import type { Word } from '@/types';
 import { Volume2 } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -14,21 +14,17 @@ interface WordOfTheDayCardProps {
 
 export function WordOfTheDayCard({ department }: WordOfTheDayCardProps) {
   const [word, setWord] = useState<Word | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    const fetchWord = async () => {
+    startTransition(async () => {
       try {
-        const wordOfTheDay = await getWordOfTheDay(department);
+        const wordOfTheDay = await getWordOfTheDayAction(department);
         setWord(wordOfTheDay);
       } catch (error) {
         console.error('Error fetching word of the day:', error);
-      } finally {
-        setLoading(false);
       }
-    };
-
-    fetchWord();
+    });
   }, [department]);
   
   const handlePronounce = () => {
@@ -38,7 +34,7 @@ export function WordOfTheDayCard({ department }: WordOfTheDayCardProps) {
     }
   };
 
-  if (loading) {
+  if (isPending) {
     return (
       <Card>
         <CardHeader>
