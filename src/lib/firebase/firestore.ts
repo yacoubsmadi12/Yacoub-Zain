@@ -8,6 +8,8 @@ export const createUserProfile = (uid: string, data: UserProfile) => {
 };
 
 // Get a user profile
+// This function should not be used from the client to fetch arbitrary profiles.
+// It's used during the sign-in process with Google to check if a profile exists.
 export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {
   const docRef = doc(db, 'users', uid);
   const docSnap = await getDoc(docRef);
@@ -16,6 +18,7 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
   }
   return null;
 };
+
 
 // Update a user profile
 export const updateUserProfile = (uid: string, data: Partial<UserProfile>) => {
@@ -29,17 +32,6 @@ export const addWord = (wordData: Omit<Word, 'id'>) => {
   const wordsCollection = collection(db, 'words');
   return addDoc(wordsCollection, wordData);
 };
-
-// Get all words for a department (for archive)
-export const getWordsByDepartment = async (department: string): Promise<Word[]> => {
-    const q = query(
-        collection(db, 'words'),
-        where('department', '==', department),
-        orderBy('date', 'desc')
-    );
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Word));
-}
 
 // Log an admin action
 export const logAdminAction = (adminId: string, action: string, details: object) => {

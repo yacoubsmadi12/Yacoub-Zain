@@ -4,7 +4,8 @@ import { createContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import type { AppUser, UserProfile } from '@/types';
-import { getUserProfile } from '@/lib/firebase/firestore';
+import { getUserProfileAction } from '@/app/actions/get-user-profile-action';
+
 
 interface AuthContextType {
   user: AppUser | null;
@@ -24,7 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshUserProfile = async () => {
     if (user) {
-      const profile = await getUserProfile(user.uid);
+      const profile = await getUserProfileAction(user.uid);
       if (profile) {
         setUser(prevUser => prevUser ? { ...prevUser, profile } : null);
       }
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const profile = await getUserProfile(firebaseUser.uid);
+        const profile = await getUserProfileAction(firebaseUser.uid);
         const appUser: AppUser = {
           ...firebaseUser,
           profile: profile || undefined,
