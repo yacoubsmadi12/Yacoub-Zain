@@ -1,9 +1,6 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
-import { config } from 'dotenv';
-
-config();
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, enableIndexedDbPersistence, type Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,15 +11,25 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
+let app: FirebaseApp;
+let auth: Auth;
+let db: Firestore;
 
-// Enable offline persistence
+if (getApps().length === 0) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApp();
+}
+
+auth = getAuth(app);
+db = getFirestore(app);
+
+
+// Enable offline persistence only on the client-side
 if (typeof window !== 'undefined') {
-  enableIndexedDbPersistence(db)
-    .catch((err) => {
+  try {
+    enableIndexedDbPersistence(db);
+  } catch (err: any) {
       if (err.code == 'failed-precondition') {
         // Multiple tabs open, persistence can only be enabled
         // in one tab at a time.
@@ -32,7 +39,7 @@ if (typeof window !== 'undefined') {
         // features required to enable persistence
         console.warn('Firestore persistence not available in this browser.');
       }
-    });
+  }
 }
 
 
