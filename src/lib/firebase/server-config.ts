@@ -4,14 +4,9 @@ import 'server-only';
 import admin from 'firebase-admin';
 import 'dotenv/config';
 
-// This is a singleton pattern to ensure Firebase Admin is initialized only once.
 let app: admin.app.App;
 
-function getFirebaseAdminApp() {
-  if (admin.apps.length > 0) {
-    return admin.apps[0]!;
-  }
-
+if (!admin.apps.length) {
   // Ensure all required environment variables are present
   if (
     !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
@@ -35,17 +30,15 @@ function getFirebaseAdminApp() {
         ),
       }),
     });
-    return app;
   } catch (error: any) {
     console.error('Firebase admin initialization error', error.message);
     throw new Error(
       'Could not initialize Firebase Admin SDK. Check server logs and .env file.'
     );
   }
+} else {
+  app = admin.apps[0]!;
 }
 
-// Initialize the app when the module is loaded
-getFirebaseAdminApp();
-
-export const adminDb = admin.firestore();
-export const adminAuth = admin.auth();
+export const adminDb = admin.firestore(app);
+export const adminAuth = admin.auth(app);
