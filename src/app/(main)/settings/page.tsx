@@ -14,6 +14,8 @@ import { useToast } from '@/hooks/use-toast';
 import { updateUserProfile } from '@/lib/firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { ProgressSummaryCard } from '@/components/dashboard/ProgressSummaryCard';
+import { Badge } from '@/components/ui/badge';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -69,64 +71,81 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-2xl mx-auto">
+    <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight font-headline">
-          Settings
+          My Profile & Settings
         </h1>
-        <p className="text-muted-foreground">Manage your account and profile settings.</p>
+        <p className="text-muted-foreground">Manage your account and see your progress at a glance.</p>
       </div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Profile</CardTitle>
-              <CardDescription>This is how your name and department appear in the app.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="John Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="department"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Department</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your department" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {departments.map(dep => <SelectItem key={dep} value={dep}>{dep}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-            <CardFooter className="border-t px-6 py-4">
-                <Button type="submit" disabled={isLoading}>
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Changes
-                </Button>
-            </CardFooter>
-          </Card>
-        </form>
-      </Form>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                <Card>
+                    <CardHeader>
+                    <CardTitle>Profile Settings</CardTitle>
+                    <CardDescription>This is how your name and department appear in the app.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Full Name</FormLabel>
+                            <FormControl>
+                            <Input placeholder="John Doe" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="department"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Department</FormLabel>
+                            <Select onValuechange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                                <SelectTrigger>
+                                <SelectValue placeholder="Select your department" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {departments.map(dep => <SelectItem key={dep} value={dep}>{dep}</SelectItem>)}
+                            </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    </CardContent>
+                    <CardFooter className="border-t px-6 py-4">
+                        <Button type="submit" disabled={isLoading}>
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Save Changes
+                        </Button>
+                    </CardFooter>
+                </Card>
+                </form>
+            </Form>
+        </div>
+        <div className="space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Your Department</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Badge variant="secondary" className="text-lg py-2 px-4">{user?.profile?.department || 'Not set'}</Badge>
+                </CardContent>
+            </Card>
+            <ProgressSummaryCard />
+        </div>
+      </div>
+
     </div>
   );
 }
