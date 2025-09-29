@@ -17,12 +17,14 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user) {
-      router.replace('/dashboard');
+    if (!loading) {
+      if (user) {
+        router.replace('/dashboard');
+      }
     }
   }, [user, loading, router]);
 
-  if (loading) {
+  if (loading || user) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -30,8 +32,7 @@ export default function HomePage() {
       </div>
     );
   }
-
-  // If user is not logged in, show the landing page.
+  
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <div className="container mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 md:grid-cols-2 py-12">
