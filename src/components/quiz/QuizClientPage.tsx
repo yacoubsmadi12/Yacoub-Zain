@@ -11,6 +11,7 @@ import { Button } from '../ui/button';
 import { saveQuizResultAction } from '@/app/actions/save-quiz-result-action';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '../ui/progress';
+import { QuizItem } from '@/types/quiz';
 
 export function QuizClientPage() {
   const { user } = useAuth();
@@ -22,6 +23,7 @@ export function QuizClientPage() {
   const [isQuizFinished, setIsQuizFinished] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [score, setScore] = useState(0);
+  const [questionSubmitted, setQuestionSubmitted] = useState(false);
 
 
   useEffect(() => {
@@ -41,24 +43,29 @@ export function QuizClientPage() {
   }, [user?.profile?.department]);
 
   const handleAnswerSelect = (selectedOption: string) => {
+    if (questionSubmitted) return;
     const newAnswers = [...answers];
     newAnswers[currentQuestionIndex] = selectedOption;
     setAnswers(newAnswers);
   };
 
-  const handleNextQuestion = () => {
+  const handleSubmitQuestion = () => {
     if (answers[currentQuestionIndex] === null) {
       toast({
         title: 'No Answer Selected',
-        description: 'Please choose an option before proceeding.',
+        description: 'Please choose an option before submitting.',
         variant: 'destructive',
       });
       return;
     }
+    setQuestionSubmitted(true);
+  }
 
+  const handleNextQuestion = () => {
     const nextQuestionIndex = currentQuestionIndex + 1;
     if (dailyQuiz && nextQuestionIndex < dailyQuiz.quizzes.quizzes.length) {
       setCurrentQuestionIndex(nextQuestionIndex);
+      setQuestionSubmitted(false);
     } else {
       finishQuiz();
     }
@@ -104,6 +111,7 @@ export function QuizClientPage() {
     setCurrentQuestionIndex(0);
     setScore(0);
     setIsQuizFinished(false);
+    setQuestionSubmitted(false);
     if(dailyQuiz) {
         setAnswers(new Array(dailyQuiz.quizzes.quizzes.length).fill(null));
     }
@@ -215,12 +223,18 @@ export function QuizClientPage() {
                     quizItem={currentQuizItem} 
                     onAnswerSelect={handleAnswerSelect}
                     selectedOption={answers[currentQuestionIndex]}
-                    isSubmitted={false}
+                    isSubmitted={questionSubmitted}
                  />
                  <div className="flex justify-end mt-6">
-                    <Button onClick={handleNextQuestion}>
-                        {isLastQuestion ? 'Finish Quiz' : 'Next Question'}
-                    </Button>
+                    {questionSubmitted ? (
+                        <Button onClick={handleNextQuestion}>
+                            {isLastQuestion ? 'Finish Quiz' : 'Next Question'}
+                        </Button>
+                    ) : (
+                        <Button onClick={handleSubmitQuestion}>
+                            Submit Answer
+                        </Button>
+                    )}
                  </div>
             </CardContent>
         </Card>

@@ -59,14 +59,14 @@ export function QuizCard({ quizItem, onAnswerSelect, selectedOption, isSubmitted
               key={index}
               variant="outline"
               className={cn(
-                'h-auto w-full justify-start text-left whitespace-normal py-4 text-base',
+                'h-auto w-full justify-start text-left whitespace-normal py-4 text-base relative',
                 getButtonClass(option)
               )}
               onClick={() => handleOptionSelect(option)}
-              disabled={isSubmitted && selectedOption !== null}
+              disabled={isSubmitted}
             >
-              <div className="flex items-center w-full">
-                <span className="flex-1">{option}</span>
+              <span className="flex-1 pr-8">{option}</span>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
                 {getIcon(option)}
               </div>
             </Button>
