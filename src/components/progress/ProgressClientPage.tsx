@@ -3,19 +3,21 @@
 import { useEffect, useState, useTransition } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { getUserProgressAction } from '@/app/actions/get-user-progress-action';
-import type { QuizResult } from '@/types';
+import type { QuizResult, Achievement } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BarChart, Flame, Target, Trophy, TrendingUp } from "lucide-react";
 import { Skeleton } from '../ui/skeleton';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { format, subDays } from 'date-fns';
+import { AchievementsCard } from './AchievementsCard';
 
 interface ProgressData {
     wordsLearned: number;
     quizAverage: number;
     streak: number;
     quizResults: Omit<QuizResult, 'id'>[];
+    achievements: Achievement[];
 }
 
 export function ProgressClientPage() {
@@ -59,6 +61,7 @@ export function ProgressClientPage() {
                     <Skeleton className="h-32" />
                 </div>
                 <Skeleton className="h-80" />
+                <Skeleton className="h-48" />
             </div>
         );
     }
@@ -112,6 +115,8 @@ export function ProgressClientPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            <AchievementsCard achievements={progress.achievements} />
             
              <Card>
                 <CardHeader>

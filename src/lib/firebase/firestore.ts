@@ -1,6 +1,6 @@
 import { doc, setDoc, getDoc, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from './config';
-import type { UserProfile, Word, QuizResult } from '@/types';
+import type { UserProfile, Word, QuizResult, Achievement } from '@/types';
 
 // Create a new user profile document
 export const createUserProfile = (uid: string, data: UserProfile) => {
@@ -61,11 +61,19 @@ export const getArchivedWords = async (department: string): Promise<Word[]> => {
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Word));
 };
 
+const allAchievements: Omit<Achievement, 'unlocked'>[] = [
+    { id: 'first_word', name: 'First Step', description: 'Completed your first quiz.' },
+    { id: 'words_10', name: 'Word Collector', description: 'Learned 10 new words.' },
+    { id: 'words_25', name: 'Lexicon Builder', description: 'Learned 25 new words.' },
+    { id: 'streak_3', name: 'On a Roll', description: 'Maintained a 3-day streak.' },
+    { id: 'streak_7', name: 'Weekly Warrior', description: 'Maintained a 7-day streak.' },
+    { id: 'quiz_perfect', name: 'Perfectionist', description: 'Scored 100% on a quiz.' },
+];
+
 export const getUserProgress = async (userId: string) => {
-    const wordsQuery = query(collection(db, 'words'), where('department', '==', 'General')); // Simplified for now
     const quizResultsQuery = query(collection(db, 'quiz_results'), where('userId', '==', userId), orderBy('date', 'desc'));
 
-    const [wordsSnapshot, quizResultsSnapshot] = await Promise.all([getDocs(wordsQuery), getDocs(quizResultsQuery)]);
+    const quizResultsSnapshot = await getDocs(quizResultsQuery);
 
     const wordsLearned = new Set(quizResultsSnapshot.docs.map(doc => doc.data().wordId)).size;
     const quizResults = quizResultsSnapshot.docs.map(doc => doc.data() as Omit<QuizResult, 'id'>);
@@ -77,29 +85,34 @@ export const getUserProgress = async (userId: string) => {
         const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
         
-        const dates = [...new Set(quizResults.map(r => r.date))].sort().reverse();
+        const dates = [...new Set(quizResults.map(r => r.date))].sort();
         const participationDates = dates.map(d => new Date(d));
 
         let currentDate = new Date(new Date().toISOString().split('T')[0]);
+        let tempStreak = 0;
 
-        // Check if today is in participation dates
-        const todayInDates = participationDates.some(d => d.toISOString().split('T')[0] === currentDate.toISOString().split('T')[0]);
-        if(todayInDates) streak++;
-        else {
-          currentDate.setDate(currentDate.getDate() - 1); // Start checking from yesterday
+        // Check for today's participation
+        const todayStr = currentDate.toISOString().split('T')[0];
+        if (dates.includes(todayStr)) {
+            tempStreak = 1;
         }
-        
-        for (let i = 0; i < participationDates.length; i++) {
-            const date = participationDates[i];
-            const expectedDateStr = currentDate.toISOString().split('T')[0];
 
-            if (date.toISOString().split('T')[0] === expectedDateStr) {
-                if(!todayInDates) streak++;
+        // Check backwards from yesterday
+        currentDate.setDate(currentDate.getDate() - 1);
+        for (let i = dates.length - 1; i >= 0; i--) {
+            const dateStr = dates[i];
+            const expectedDateStr = currentDate.toISOString().split('T')[0];
+            
+            if (dateStr === todayStr) continue;
+
+            if (dateStr === expectedDateStr) {
+                tempStreak++;
                 currentDate.setDate(currentDate.getDate() - 1);
-            } else if (date < currentDate) {
-                break; // Gap in dates
+            } else if (new Date(dateStr) < currentDate) {
+                break;
             }
         }
+        streak = tempStreak;
     }
 
 
@@ -107,10 +120,39 @@ export const getUserProgress = async (userId: string) => {
         ? quizResults.reduce((acc, r) => acc + r.score, 0) / quizResults.length
         : 0;
 
+    // Check achievements
+    const hasPerfectScore = quizResults.some(r => r.score === 100);
+
+    const achievements = allAchievements.map(ach => {
+        let unlocked = false;
+        switch (ach.id) {
+            case 'first_word':
+                unlocked = quizResults.length > 0;
+                break;
+            case 'words_10':
+                unlocked = wordsLearned >= 10;
+                break;
+            case 'words_25':
+                unlocked = wordsLearned >= 25;
+                break;
+            case 'streak_3':
+                unlocked = streak >= 3;
+                break;
+            case 'streak_7':
+                unlocked = streak >= 7;
+                break;
+            case 'quiz_perfect':
+                unlocked = hasPerfectScore;
+                break;
+        }
+        return { ...ach, unlocked };
+    });
+
     return {
         wordsLearned,
         quizAverage,
         streak,
         quizResults,
+        achievements,
     };
 };

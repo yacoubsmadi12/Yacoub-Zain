@@ -29,3 +29,10 @@ export interface QuizResult {
   score: number; // Percentage
   date: string; // YYYY-MM-DD
 }
+
+export interface Achievement {
+  id: 'first_word' | 'streak_3' | 'streak_7' | 'words_10' | 'words_25' | 'quiz_perfect';
+  name: string;
+  description: string;
+  unlocked: boolean;
+}
