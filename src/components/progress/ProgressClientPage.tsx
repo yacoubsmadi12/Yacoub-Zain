@@ -43,9 +43,12 @@ export function ProgressClientPage() {
                         achievements: []
                     });
                 }
+                if (progressUpdated) {
+                    setProgressUpdated(false); // Reset the flag after updating
+                }
             });
         }
-    }, [user, progressUpdated]);
+    }, [user, progressUpdated, setProgressUpdated]);
 
 
     const chartData = Array.from({ length: 7 }).map((_, i) => {
