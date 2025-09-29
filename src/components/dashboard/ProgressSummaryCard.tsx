@@ -20,12 +20,14 @@ export function ProgressSummaryCard({ userId }: ProgressSummaryCardProps) {
             const data = await getUserProgressAction(userId);
             if(data) {
                 setProgress(data);
+            } else {
+                setProgress({ streak: 0, wordsLearned: 0, quizAverage: 0 });
             }
         });
     }
   }, [userId]);
 
-  if (isPending || !progress) {
+  if (isPending || progress === null) {
     return (
         <Card>
             <CardHeader>

@@ -31,6 +31,15 @@ export function ProgressClientPage() {
                 const data = await getUserProgressAction(user.uid);
                 if (data) {
                     setProgress(data as ProgressData);
+                } else {
+                    // Handle case where no data is returned (e.g., new user)
+                    setProgress({
+                        wordsLearned: 0,
+                        quizAverage: 0,
+                        streak: 0,
+                        quizResults: [],
+                        achievements: []
+                    });
                 }
             });
         }
@@ -52,7 +61,7 @@ export function ProgressClientPage() {
     }).reverse();
 
 
-    if (isPending || !progress) {
+    if (isPending || progress === null) {
         return (
             <div className="space-y-6">
                 <div className="grid gap-6 md:grid-cols-3">
