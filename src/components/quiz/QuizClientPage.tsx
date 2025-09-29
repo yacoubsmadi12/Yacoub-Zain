@@ -234,7 +234,7 @@ export function QuizClientPage() {
                             {isLastQuestion ? 'Finish Quiz' : 'Next Question'}
                         </Button>
                     ) : (
-                        <Button onClick={handleSubmitQuestion}>
+                        <Button onClick={handleSubmitQuestion} disabled={answers[currentQuestionIndex] === null}>
                             Submit Answer
                         </Button>
                     )}
