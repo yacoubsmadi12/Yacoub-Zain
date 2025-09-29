@@ -1,13 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import type { DailyQuiz } from '@/app/actions/get-daily-quiz-action';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { type QuizItem } from '@/ai/flows/generate-multiple-quizzes-flow';
+import { type QuizItem } from '@/types/quiz';
 
 interface QuizCardProps {
   quizItem: QuizItem;

@@ -9,19 +9,13 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { QuizItemSchema } from '@/types/quiz';
 
 const GenerateMultipleQuizzesInputSchema = z.object({
   word: z.string().describe('The word to create quizzes for.'),
   definition: z.string().describe('The definition of the word.'),
 });
 export type GenerateMultipleQuizzesInput = z.infer<typeof GenerateMultipleQuizzesInputSchema>;
-
-export const QuizItemSchema = z.object({
-    question: z.string().describe("A unique question about the word. Questions should be varied, asking about the definition, a synonym, an antonym, or asking to complete a sentence."),
-    options: z.array(z.string()).length(4).describe("An array of four plausible answers."),
-    correctAnswer: z.string().describe("The correct answer from the options array."),
-});
-export type QuizItem = z.infer<typeof QuizItemSchema>;
 
 const GenerateMultipleQuizzesOutputSchema = z.object({
   quizzes: z.array(QuizItemSchema).length(5).describe("An array of 5 unique quiz questions."),
@@ -36,7 +30,7 @@ const prompt = ai.definePrompt({
   name: 'generateMultipleQuizzesPrompt',
   input: {schema: GenerateMultipleQuizzesInputSchema},
   output: {schema: GenerateMultipleQuizzesOutputSchema},
-  prompt: `You are an expert in creating educational content. Your task is to generate a set of 5 unique multiple-choice questions to test a user's understanding of a vocabulary word.
+  prompt: `You are an expert in educational content. Your task is to generate a set of 5 unique multiple-choice questions to test a user's understanding of a vocabulary word.
 
 Word: "{{word}}"
 Definition: "{{definition}}"
