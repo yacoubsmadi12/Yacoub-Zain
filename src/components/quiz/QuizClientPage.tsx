@@ -12,6 +12,7 @@ import { saveQuizResultAction } from '@/app/actions/save-quiz-result-action';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '../ui/progress';
 import { QuizItem } from '@/types/quiz';
+import { useProgressUpdate } from '@/context/ProgressUpdateContext';
 
 export function QuizClientPage() {
   const { user } = useAuth();
@@ -24,6 +25,7 @@ export function QuizClientPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [score, setScore] = useState(0);
   const [questionSubmitted, setQuestionSubmitted] = useState(false);
+  const { setProgressUpdated } = useProgressUpdate();
 
 
   useEffect(() => {
@@ -92,6 +94,7 @@ export function QuizClientPage() {
             wordId: dailyQuiz.word.id,
             score: finalScore
         });
+        setProgressUpdated(true); // Notify other components
         toast({
             title: 'Quiz Complete!',
             description: `Your score of ${finalScore.toFixed(0)}% has been saved.`,

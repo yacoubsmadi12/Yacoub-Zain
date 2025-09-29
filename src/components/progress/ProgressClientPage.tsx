@@ -11,6 +11,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { format, subDays } from 'date-fns';
 import { AchievementsCard } from './AchievementsCard';
+import { useProgressUpdate } from '@/context/ProgressUpdateContext';
 
 interface ProgressData {
     wordsLearned: number;
@@ -24,6 +25,7 @@ export function ProgressClientPage() {
     const { user } = useAuth();
     const [progress, setProgress] = useState<ProgressData | null>(null);
     const [isPending, startTransition] = useTransition();
+    const { progressUpdated, setProgressUpdated } = useProgressUpdate();
 
     useEffect(() => {
         if (user?.uid) {
@@ -43,7 +45,8 @@ export function ProgressClientPage() {
                 }
             });
         }
-    }, [user]);
+    }, [user, progressUpdated]);
+
 
     const chartData = Array.from({ length: 7 }).map((_, i) => {
         const date = subDays(new Date(), i);
