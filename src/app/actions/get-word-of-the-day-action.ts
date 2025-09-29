@@ -1,8 +1,7 @@
 'use server';
 
 import 'server-only';
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { adminDb } from '@/lib/firebase/server-config';
 import type { Word } from '@/types';
 
 /**
@@ -14,13 +13,12 @@ export async function getWordOfTheDayAction(department: string): Promise<Word | 
 
   try {
     const fetchWord = async (dept: string) => {
-      const q = query(
-        collection(db, 'words'),
-        where('department', '==', dept),
-        where('date', '==', today),
-        limit(1)
-      );
-      const snapshot = await getDocs(q);
+      const snapshot = await adminDb
+        .collection('words')
+        .where('department', '==', dept)
+        .where('date', '==', today)
+        .limit(1)
+        .get();
 
       if (!snapshot.empty) {
         const doc = snapshot.docs[0];

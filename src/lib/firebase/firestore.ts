@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, collection, addDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './config';
 import type { UserProfile, Word } from '@/types';
 
@@ -7,9 +7,8 @@ export const createUserProfile = (uid: string, data: UserProfile) => {
   return setDoc(doc(db, 'users', uid), data);
 };
 
-// Get a user profile
-// This function should not be used from the client to fetch arbitrary profiles.
-// It's used during the sign-in process with Google to check if a profile exists.
+// Get a user profile (CLIENT-SIDE ONLY)
+// Used during sign-in with Google to check if a profile exists.
 export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {
   const docRef = doc(db, 'users', uid);
   const docSnap = await getDoc(docRef);
@@ -40,6 +39,6 @@ export const logAdminAction = (adminId: string, action: string, details: object)
         adminId,
         action,
         details,
-        timestamp: new Date(),
+        timestamp: serverTimestamp(),
     });
 }
