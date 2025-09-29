@@ -15,44 +15,52 @@ interface WordOfTheDayCardProps {
 export function WordOfTheDayCard({ department }: WordOfTheDayCardProps) {
   const [word, setWord] = useState<Word | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [timeUntilTomorrow, setTimeUntilTomorrow] = useState('');
+  const [expiryTime, setExpiryTime] = useState<number | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState('');
 
   useEffect(() => {
     startTransition(async () => {
       try {
         const wordOfTheDay = await getWordOfTheDayAction(department);
         setWord(wordOfTheDay);
+        if (wordOfTheDay) {
+          // Set expiry time to 24 hours from now
+          const now = new Date();
+          setExpiryTime(now.getTime() + 24 * 60 * 60 * 1000);
+        }
       } catch (error) {
         console.error('Error fetching word of the day:', error);
       }
     });
   }, [department]);
-  
+
   useEffect(() => {
-    const calculateTimeUntilTomorrow = () => {
-        const now = new Date();
-        const tomorrow = new Date(now);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
+    if (!expiryTime) return;
 
-        const diff = tomorrow.getTime() - now.getTime();
+    const calculateTimeRemaining = () => {
+      const now = new Date().getTime();
+      const difference = expiryTime - now;
 
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      if (difference <= 0) {
+        return '00:00:00';
+      }
 
-        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / 1000 / 60) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
-
+    
     const intervalId = setInterval(() => {
-        setTimeUntilTomorrow(calculateTimeUntilTomorrow());
+      setTimeRemaining(calculateTimeRemaining());
     }, 1000);
 
     // Set initial value
-    setTimeUntilTomorrow(calculateTimeUntilTomorrow());
+    setTimeRemaining(calculateTimeRemaining());
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [expiryTime]);
 
   const handlePronounce = () => {
     if (word && 'speechSynthesis' in window) {
@@ -124,7 +132,7 @@ export function WordOfTheDayCard({ department }: WordOfTheDayCardProps) {
        <CardFooter className="border-t pt-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4" />
-            <span>New word in: {timeUntilTomorrow}</span>
+            <span>New word in: {timeRemaining}</span>
           </div>
         </CardFooter>
     </Card>
