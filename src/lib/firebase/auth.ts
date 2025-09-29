@@ -32,9 +32,7 @@ export const signInWithEmail = (email: string, password: string) => {
 // Sign in with Google
 export const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({
-    hd: 'zain.com', // Restrict to zain.com domain
-  });
+  // Zain domain restriction removed as per previous changes that did not work as expected
   const result = await signInWithPopup(auth, provider);
   const user = result.user;
   
