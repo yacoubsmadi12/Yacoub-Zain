@@ -2,26 +2,28 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Flame, Target, Trophy } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState, useTransition } from 'react';
 import { getUserProgressAction } from '@/app/actions/get-user-progress-action';
 import { Skeleton } from '../ui/skeleton';
 
-export function ProgressSummaryCard() {
-  const { user } = useAuth();
+interface ProgressSummaryCardProps {
+    userId: string;
+}
+
+export function ProgressSummaryCard({ userId }: ProgressSummaryCardProps) {
   const [progress, setProgress] = useState<{streak: number, wordsLearned: number, quizAverage: number} | null>(null);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (user?.uid) {
+    if (userId) {
         startTransition(async () => {
-            const data = await getUserProgressAction(user.uid);
+            const data = await getUserProgressAction(userId);
             if(data) {
                 setProgress(data);
             }
         });
     }
-  }, [user]);
+  }, [userId]);
 
   if (isPending || !progress) {
     return (

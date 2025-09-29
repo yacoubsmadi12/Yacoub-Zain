@@ -142,7 +142,7 @@ export default function SettingsPage() {
                     <Badge variant="secondary" className="text-lg py-2 px-4">{user?.profile?.department || 'Not set'}</Badge>
                 </CardContent>
             </Card>
-            <ProgressSummaryCard />
+            {user && <ProgressSummaryCard userId={user.uid} />}
         </div>
       </div>
 
