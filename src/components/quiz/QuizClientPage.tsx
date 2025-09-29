@@ -18,9 +18,11 @@ export function QuizClientPage() {
   const [dailyQuiz, setDailyQuiz] = useState<DailyQuiz | null>(null);
   const [isPending, startTransition] = useTransition();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState<(string | null)[]>([]);
   const [isQuizFinished, setIsQuizFinished] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [score, setScore] = useState(0);
+
 
   useEffect(() => {
     if (user?.profile?.department) {
@@ -28,36 +30,56 @@ export function QuizClientPage() {
         try {
           const quizData = await getDailyQuizAction(user.profile.department!);
           setDailyQuiz(quizData);
+          if (quizData) {
+            setAnswers(new Array(quizData.quizzes.quizzes.length).fill(null));
+          }
         } catch (error) {
           console.error('Failed to fetch daily quiz:', error);
         }
       });
     }
   }, [user?.profile?.department]);
-  
-  const handleAnswer = (isCorrect: boolean) => {
-    if (isCorrect) {
-      setScore(prev => prev + 1);
+
+  const handleAnswerSelect = (selectedOption: string) => {
+    const newAnswers = [...answers];
+    newAnswers[currentQuestionIndex] = selectedOption;
+    setAnswers(newAnswers);
+  };
+
+  const handleNextQuestion = () => {
+    if (answers[currentQuestionIndex] === null) {
+      toast({
+        title: 'No Answer Selected',
+        description: 'Please choose an option before proceeding.',
+        variant: 'destructive',
+      });
+      return;
     }
-    
-    // Move to the next question after a delay
-    setTimeout(() => {
-        const nextQuestionIndex = currentQuestionIndex + 1;
-        if (dailyQuiz && nextQuestionIndex < dailyQuiz.quizzes.quizzes.length) {
-            setCurrentQuestionIndex(nextQuestionIndex);
-        } else {
-            finishQuiz();
-        }
-    }, 1500); // Wait 1.5 seconds to show feedback
+
+    const nextQuestionIndex = currentQuestionIndex + 1;
+    if (dailyQuiz && nextQuestionIndex < dailyQuiz.quizzes.quizzes.length) {
+      setCurrentQuestionIndex(nextQuestionIndex);
+    } else {
+      finishQuiz();
+    }
   };
 
   const finishQuiz = async () => {
-    setIsQuizFinished(true);
     if (!user || !dailyQuiz) return;
+
+    let correctAnswers = 0;
+    dailyQuiz.quizzes.quizzes.forEach((quiz, index) => {
+      if (answers[index] === quiz.correctAnswer) {
+        correctAnswers++;
+      }
+    });
+
+    const finalScore = (correctAnswers / dailyQuiz.quizzes.quizzes.length) * 100;
+    setScore(correctAnswers);
+    setIsQuizFinished(true);
     
     setIsSubmitting(true);
     try {
-        const finalScore = score / dailyQuiz.quizzes.quizzes.length * 100;
         await saveQuizResultAction({
             userId: user.uid,
             wordId: dailyQuiz.word.id,
@@ -82,6 +104,9 @@ export function QuizClientPage() {
     setCurrentQuestionIndex(0);
     setScore(0);
     setIsQuizFinished(false);
+    if(dailyQuiz) {
+        setAnswers(new Array(dailyQuiz.quizzes.quizzes.length).fill(null));
+    }
   };
 
   if (isPending) {
@@ -175,6 +200,7 @@ export function QuizClientPage() {
 
   const currentQuizItem = dailyQuiz.quizzes.quizzes[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / dailyQuiz.quizzes.quizzes.length) * 100;
+  const isLastQuestion = currentQuestionIndex === dailyQuiz.quizzes.quizzes.length - 1;
 
   return (
     <div className="space-y-6">
@@ -185,7 +211,17 @@ export function QuizClientPage() {
             </CardHeader>
             <CardContent>
                  <Progress value={progress} className="mb-6" />
-                 <QuizCard quizItem={currentQuizItem} onAnswer={handleAnswer} />
+                 <QuizCard 
+                    quizItem={currentQuizItem} 
+                    onAnswerSelect={handleAnswerSelect}
+                    selectedOption={answers[currentQuestionIndex]}
+                    isSubmitted={false}
+                 />
+                 <div className="flex justify-end mt-6">
+                    <Button onClick={handleNextQuestion}>
+                        {isLastQuestion ? 'Finish Quiz' : 'Next Question'}
+                    </Button>
+                 </div>
             </CardContent>
         </Card>
     </div>

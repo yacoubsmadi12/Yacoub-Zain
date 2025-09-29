@@ -5,41 +5,25 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { CheckCircle, XCircle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import { type QuizItem } from '@/types/quiz';
 
 interface QuizCardProps {
   quizItem: QuizItem;
-  onAnswer: (isCorrect: boolean) => void;
+  onAnswerSelect: (selectedOption: string) => void;
+  selectedOption: string | null;
+  isSubmitted: boolean;
 }
 
-export function QuizCard({ quizItem, onAnswer }: QuizCardProps) {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [isAnswered, setIsAnswered] = useState(false);
-  const { toast } = useToast();
-
+export function QuizCard({ quizItem, onAnswerSelect, selectedOption, isSubmitted }: QuizCardProps) {
   const { question, options, correctAnswer } = quizItem;
 
   const handleOptionSelect = (option: string) => {
-    if (isAnswered) return;
-    setSelectedOption(option);
-  };
-
-  const handleSubmit = () => {
-    if (!selectedOption) {
-      toast({
-        title: 'No Answer Selected',
-        description: 'Please choose an option before submitting.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    setIsAnswered(true);
-    onAnswer(selectedOption === correctAnswer);
+    if (isSubmitted) return;
+    onAnswerSelect(option);
   };
 
   const getButtonClass = (option: string) => {
-    if (!isAnswered) {
+    if (!isSubmitted) {
       return selectedOption === option ? 'border-primary ring-2 ring-primary' : '';
     }
     if (option === correctAnswer) {
@@ -52,7 +36,7 @@ export function QuizCard({ quizItem, onAnswer }: QuizCardProps) {
   };
 
   const getIcon = (option: string) => {
-    if (!isAnswered) return null;
+    if (!isSubmitted) return null;
     if (option === correctAnswer) {
       return <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />;
     }
@@ -79,7 +63,7 @@ export function QuizCard({ quizItem, onAnswer }: QuizCardProps) {
                 getButtonClass(option)
               )}
               onClick={() => handleOptionSelect(option)}
-              disabled={isAnswered}
+              disabled={isSubmitted && selectedOption !== null}
             >
               <div className="flex items-center w-full">
                 <span className="flex-1">{option}</span>
@@ -88,11 +72,6 @@ export function QuizCard({ quizItem, onAnswer }: QuizCardProps) {
             </Button>
           ))}
         </div>
-        {!isAnswered && (
-             <div className="flex justify-end gap-2">
-                <Button onClick={handleSubmit}>Submit Answer</Button>
-            </div>
-        )}
       </CardContent>
     </Card>
   );
