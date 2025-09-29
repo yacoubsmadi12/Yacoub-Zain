@@ -1,12 +1,14 @@
 'use server';
 
 import 'server-only';
-import { collection, query, where, limit, getDocs } from 'firebase/firestore';
+import { collection, query, where, limit, getDocs, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import type { Word } from '@/types';
+import { generateWordOfTheDay } from '@/ai/flows/generate-word-of-the-day-flow';
 
 /**
  * Fetches the word of the day for a given department.
+ * If no word is found, it generates a new one using an AI flow and saves it.
  * This is a Server Action and will only execute on the server.
  */
 export async function getWordOfTheDayAction(department: string): Promise<Word | null> {
@@ -43,12 +45,29 @@ export async function getWordOfTheDayAction(department: string): Promise<Word | 
         return word;
       }
     }
+    
+    // If still no word is found for today, generate one for the user's department
+    console.log(`No word found for ${department} or General. Generating a new one.`);
+    const generatedWord = await generateWordOfTheDay({ department });
+
+    const newWordData = {
+      word: generatedWord.word,
+      definition: generatedWord.definition,
+      examples: generatedWord.examples,
+      pronunciation: generatedWord.pronunciation,
+      department: department,
+      date: today,
+    };
+
+    const docRef = await addDoc(collection(db, 'words'), newWordData);
+    console.log(`New word "${generatedWord.word}" saved with ID: ${docRef.id}`);
+
+    return { id: docRef.id, ...newWordData };
+
   } catch (error) {
-    console.error("Error fetching word of the day from server action: ", error);
+    console.error("Error in getWordOfTheDayAction: ", error);
     // In a production app, you might want to handle this more gracefully.
     // For now, we return null, and the UI will show a "not available" message.
     return null;
   }
-  
-  return null;
 }
