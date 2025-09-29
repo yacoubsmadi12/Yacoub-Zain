@@ -1,17 +1,12 @@
 'use server';
 
 import 'server-only';
-import { getAuth } from 'firebase/auth/web-extension';
-import { app } from '@/lib/firebase/config';
 import { getUserProgress } from '@/lib/firebase/firestore';
 
-// NOTE: This is a workaround to get the auth instance on the server.
-const auth = getAuth(app);
-
-export async function getUserProgressAction() {
+export async function getUserProgressAction(userId: string) {
     try {
-        const userId = auth.currentUser?.uid;
         if (!userId) {
+            console.log("User ID not provided to getUserProgressAction");
             return null;
         }
 

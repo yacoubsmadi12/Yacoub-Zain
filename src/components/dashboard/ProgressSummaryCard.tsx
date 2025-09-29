@@ -13,9 +13,9 @@ export function ProgressSummaryCard() {
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (user) {
+    if (user?.uid) {
         startTransition(async () => {
-            const data = await getUserProgressAction();
+            const data = await getUserProgressAction(user.uid);
             if(data) {
                 setProgress(data);
             }
