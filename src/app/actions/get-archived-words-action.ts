@@ -1,21 +1,21 @@
 'use server';
 
 import 'server-only';
-import { headers } from 'next/headers';
-import { adminAuth } from '@/lib/firebase/admin-config';
+import { getAuth } from 'firebase/auth/web-extension';
+import { app } from '@/lib/firebase/config';
 import { getUserProfile, getArchivedWords } from '@/lib/firebase/firestore';
 import type { Word } from '@/types';
 
+// NOTE: This is a workaround to get the auth instance on the server.
+const auth = getAuth(app);
+
 export async function getArchivedWordsAction(): Promise<Word[]> {
     try {
-        const authorization = headers().get('Authorization');
-        if (!authorization?.startsWith('Bearer ')) {
+        const userId = auth.currentUser?.uid;
+        if (!userId) {
             // This can happen if the user is not logged in.
             return [];
         }
-        const idToken = authorization.split('Bearer ')[1];
-        const decodedToken = await adminAuth.verifyIdToken(idToken);
-        const userId = decodedToken.uid;
 
         const userProfile = await getUserProfile(userId);
         if (!userProfile?.department) {

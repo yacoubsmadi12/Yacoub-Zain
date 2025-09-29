@@ -1,19 +1,19 @@
 'use server';
 
 import 'server-only';
-import { headers } from 'next/headers';
-import { adminAuth } from '@/lib/firebase/admin-config';
+import { getAuth } from 'firebase/auth/web-extension';
+import { app } from '@/lib/firebase/config';
 import { getUserProgress } from '@/lib/firebase/firestore';
+
+// NOTE: This is a workaround to get the auth instance on the server.
+const auth = getAuth(app);
 
 export async function getUserProgressAction() {
     try {
-        const authorization = headers().get('Authorization');
-        if (!authorization?.startsWith('Bearer ')) {
+        const userId = auth.currentUser?.uid;
+        if (!userId) {
             return null;
         }
-        const idToken = authorization.split('Bearer ')[1];
-        const decodedToken = await adminAuth.verifyIdToken(idToken);
-        const userId = decodedToken.uid;
 
         return await getUserProgress(userId);
 
