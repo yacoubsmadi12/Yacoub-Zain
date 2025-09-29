@@ -11,6 +11,9 @@ interface SaveQuizResultPayload {
 
 export async function saveQuizResultAction(payload: SaveQuizResultPayload): Promise<void> {
     try {
+        if (!payload || !payload.userId || !payload.wordId) {
+            throw new Error("Invalid payload provided for saving quiz result.");
+        }
         await saveQuizResult(payload);
     } catch (error) {
         console.error("Error saving quiz result: ", error);
