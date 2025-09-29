@@ -13,10 +13,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Progress } from '../ui/progress';
 import { QuizItem } from '@/types/quiz';
 import { useProgressUpdate } from '@/context/ProgressUpdateContext';
+import { useRouter } from 'next/navigation';
 
 export function QuizClientPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
   const [dailyQuiz, setDailyQuiz] = useState<DailyQuiz | null>(null);
   const [isPending, startTransition] = useTransition();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -96,8 +98,8 @@ export function QuizClientPage() {
         });
         setProgressUpdated(true); // Notify other components
         toast({
-            title: 'Quiz Complete!',
-            description: `Your score of ${finalScore.toFixed(0)}% has been saved.`,
+            title: 'Quiz Score Saved!',
+            description: `Your score of ${finalScore.toFixed(0)}% has been saved. Check your progress page.`,
         });
     } catch (error) {
         toast({
@@ -119,6 +121,10 @@ export function QuizClientPage() {
         setAnswers(new Array(dailyQuiz.quizzes.quizzes.length).fill(null));
     }
   };
+
+  const viewProgress = () => {
+    router.push('/progress');
+  }
 
   if (isPending) {
     return (
@@ -190,9 +196,14 @@ export function QuizClientPage() {
                 <p className="text-lg">You answered <span className="font-bold text-primary">{score}</span> out of <span className="font-bold">{totalQuestions}</span> questions correctly.</p>
             </div>
 
-          <Button onClick={resetQuiz} disabled={isSubmitting}>
-            Try Again
-          </Button>
+          <div className="flex gap-4">
+            <Button onClick={resetQuiz} variant="outline" disabled={isSubmitting}>
+              Try Again
+            </Button>
+            <Button onClick={viewProgress}>
+              View Progress
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );

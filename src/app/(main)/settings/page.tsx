@@ -108,7 +108,7 @@ export default function SettingsPage() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>Department</FormLabel>
-                            <Select onValuechange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                                 <SelectTrigger>
                                 <SelectValue placeholder="Select your department" />
