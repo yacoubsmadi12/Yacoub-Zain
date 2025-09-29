@@ -1,15 +1,16 @@
 'use server';
 
 import 'server-only';
-import { adminDb } from '@/lib/firebase/admin-config';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 import type { UserProfile } from '@/types';
 
 export async function getUserProfileAction(uid: string): Promise<UserProfile | null> {
   try {
-    const docRef = adminDb.collection('users').doc(uid);
-    const docSnap = await docRef.get();
+    const docRef = doc(db, 'users', uid);
+    const docSnap = await getDoc(docRef);
     
-    if (docSnap.exists) {
+    if (docSnap.exists()) {
       return docSnap.data() as UserProfile;
     }
     return null;
