@@ -21,3 +21,11 @@ export interface Word {
   department: string;
   date: string; // YYYY-MM-DD
 }
+
+export interface QuizResult {
+  id: string;
+  userId: string;
+  wordId: string;
+  score: number; // Percentage
+  date: string; // YYYY-MM-DD
+}

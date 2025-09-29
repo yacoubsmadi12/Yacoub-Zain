@@ -1,11 +1,52 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Flame, Target, Trophy } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useEffect, useState, useTransition } from 'react';
+import { getUserProgressAction } from '@/app/actions/get-user-progress-action';
+import { Skeleton } from '../ui/skeleton';
 
 export function ProgressSummaryCard() {
-  // These would be dynamic values fetched from Firestore
-  const streak = 5;
-  const wordsLearned = 42;
-  const quizAverage = 88;
+  const { user } = useAuth();
+  const [progress, setProgress] = useState<{streak: number, wordsLearned: number, quizAverage: number} | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (user) {
+        startTransition(async () => {
+            const data = await getUserProgressAction();
+            if(data) {
+                setProgress(data);
+            }
+        });
+    }
+  }, [user]);
+
+  if (isPending || !progress) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Progress Summary</CardTitle>
+                <CardDescription>Your learning at a glance</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-5 w-10" />
+                </div>
+                 <div className="flex items-center justify-between">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-5 w-10" />
+                </div>
+                 <div className="flex items-center justify-between">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-5 w-10" />
+                </div>
+            </CardContent>
+        </Card>
+    )
+  }
 
   return (
     <Card>
@@ -19,21 +60,21 @@ export function ProgressSummaryCard() {
             <Flame className="h-5 w-5 text-accent" />
             <span className="text-muted-foreground">Current Streak</span>
           </div>
-          <span className="font-bold">{streak} days</span>
+          <span className="font-bold">{progress.streak} days</span>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Target className="h-5 w-5 text-primary" />
             <span className="text-muted-foreground">Words Learned</span>
           </div>
-          <span className="font-bold">{wordsLearned}</span>
+          <span className="font-bold">{progress.wordsLearned}</span>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-green-500" />
             <span className="text-muted-foreground">Quiz Average</span>
           </div>
-          <span className="font-bold">{quizAverage}%</span>
+          <span className="font-bold">{progress.quizAverage.toFixed(0)}%</span>
         </div>
       </CardContent>
     </Card>

@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, getIdToken } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import type { AppUser, UserProfile } from '@/types';
 import { getUserProfileAction } from '@/app/actions/get-user-profile-action';
@@ -11,17 +11,26 @@ interface AuthContextType {
   user: AppUser | null;
   loading: boolean;
   refreshUserProfile: () => void;
+  getAuthToken: () => Promise<string | null>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   refreshUserProfile: () => {},
+  getAuthToken: async () => null,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const getAuthToken = async (): Promise<string | null> => {
+    if (auth.currentUser) {
+        return await getIdToken(auth.currentUser);
+    }
+    return null;
+  }
 
   const refreshUserProfile = async () => {
     if (user) {
@@ -51,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, refreshUserProfile }}>
+    <AuthContext.Provider value={{ user, loading, refreshUserProfile, getAuthToken }}>
       {children}
     </AuthContext.Provider>
   );

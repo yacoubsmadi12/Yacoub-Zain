@@ -4,10 +4,12 @@ import 'server-only';
 import { getWordOfTheDayAction } from './get-word-of-the-day-action';
 import { generateQuiz, type GenerateQuizOutput } from '@/ai/flows/generate-quiz-flow';
 import type { Word } from '@/types';
+import { generateMultipleQuizzes, type GenerateMultipleQuizzesOutput } from '@/ai/flows/generate-multiple-quizzes-flow';
+
 
 export interface DailyQuiz {
     word: Word;
-    quiz: GenerateQuizOutput;
+    quizzes: GenerateMultipleQuizzesOutput;
 }
 
 /**
@@ -23,9 +25,9 @@ export async function getDailyQuizAction(department: string): Promise<DailyQuiz 
             return null;
         }
 
-        const quiz = await generateQuiz({ word: word.word, definition: word.definition });
+        const quizzes = await generateMultipleQuizzes({ word: word.word, definition: word.definition });
 
-        return { word, quiz };
+        return { word, quizzes };
 
     } catch (error) {
         console.error("Error in getDailyQuizAction: ", error);
