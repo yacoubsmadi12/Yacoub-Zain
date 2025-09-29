@@ -23,7 +23,6 @@ const menuItems = [
 ]
 
 const bottomMenuItems = [
-  { href: '/settings', label: 'Settings', icon: Cog },
   { href: '/about', label: 'About', icon: HelpCircle },
 ]
 
