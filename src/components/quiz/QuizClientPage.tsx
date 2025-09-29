@@ -34,7 +34,7 @@ export function QuizClientPage() {
     if (user?.profile?.department) {
       startTransition(async () => {
         try {
-          const quizData = await getDailyQuizAction(user.profile.department!);
+          const quizData = await getDailyQuizAction(user?.profile?.department ?? "general");
           setDailyQuiz(quizData);
           if (quizData) {
             setAnswers(new Array(quizData.quizzes.quizzes.length).fill(null));
