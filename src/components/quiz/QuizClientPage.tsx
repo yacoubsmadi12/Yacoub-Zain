@@ -190,17 +190,6 @@ export function QuizClientPage() {
                 <p className="text-lg">You answered <span className="font-bold text-primary">{score}</span> out of <span className="font-bold">{totalQuestions}</span> questions correctly.</p>
             </div>
 
-            <div className="flex w-full justify-around pt-4">
-                <div className="flex items-center gap-2">
-                    <Check className="h-6 w-6 text-green-500" />
-                    <span className="text-lg">{score} Correct</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <X className="h-6 w-6 text-destructive" />
-                    <span className="text-lg">{totalQuestions - score} Incorrect</span>
-                </div>
-            </div>
-
           <Button onClick={resetQuiz} disabled={isSubmitting}>
             Try Again
           </Button>
