@@ -10,9 +10,17 @@ import { auth } from './config';
 import { createUserProfile, getUserProfile } from './firestore';
 import type { UserProfile } from '@/types';
 
+const checkFirebaseAuth = () => {
+  if (!auth) {
+    throw new Error('Firebase is not configured. Please add Firebase environment variables to use authentication features.');
+  }
+  return auth;
+};
+
 // Register with email and password
 export const registerWithEmail = async (email: string, password: string, name: string, department: string) => {
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const firebaseAuth = checkFirebaseAuth();
+  const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
   const user = userCredential.user;
   const userProfile: UserProfile = {
     uid: user.uid,
@@ -26,14 +34,15 @@ export const registerWithEmail = async (email: string, password: string, name: s
 
 // Sign in with email and password
 export const signInWithEmail = (email: string, password: string) => {
-  return signInWithEmailAndPassword(auth, email, password);
+  const firebaseAuth = checkFirebaseAuth();
+  return signInWithEmailAndPassword(firebaseAuth, email, password);
 };
 
 // Sign in with Google
 export const signInWithGoogle = async () => {
+  const firebaseAuth = checkFirebaseAuth();
   const provider = new GoogleAuthProvider();
-  // Zain domain restriction removed as per previous changes that did not work as expected
-  const result = await signInWithPopup(auth, provider);
+  const result = await signInWithPopup(firebaseAuth, provider);
   const user = result.user;
   
   // Check if user profile exists, if not create one
@@ -52,10 +61,12 @@ export const signInWithGoogle = async () => {
 
 // Sign out
 export const logout = () => {
-  return signOut(auth);
+  const firebaseAuth = checkFirebaseAuth();
+  return signOut(firebaseAuth);
 };
 
 // Password reset
 export const resetPassword = (email: string) => {
-    return sendPasswordResetEmail(auth, email);
+  const firebaseAuth = checkFirebaseAuth();
+  return sendPasswordResetEmail(firebaseAuth, email);
 }
