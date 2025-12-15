@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const getAuthToken = async (): Promise<string | null> => {
-    if (auth.currentUser) {
+    if (auth?.currentUser) {
         return await getIdToken(auth.currentUser);
     }
     return null;
@@ -42,6 +42,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
+    
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const profile = await getUserProfileAction(firebaseUser.uid);

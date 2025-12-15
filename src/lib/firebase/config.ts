@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, type Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,14 +11,16 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-if (!firebaseConfig.projectId) {
-  throw new Error('Missing Firebase project ID in .env file. Please add NEXT_PUBLIC_FIREBASE_PROJECT_ID.');
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+
+if (firebaseConfig.projectId) {
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  auth = getAuth(app);
+  db = getFirestore(app);
+} else {
+  console.warn('Firebase configuration is missing. Please add NEXT_PUBLIC_FIREBASE_PROJECT_ID and other Firebase environment variables.');
 }
-
-// Initialize Firebase for client side
-const app: FirebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-
-const auth = getAuth(app);
-const db = getFirestore(app);
 
 export { app, auth, db };
