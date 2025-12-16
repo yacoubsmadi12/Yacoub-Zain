@@ -7,6 +7,10 @@ import type { UserProfile } from '@/types';
 
 export async function getUserProfileAction(uid: string): Promise<UserProfile | null> {
   try {
+    if (!db) {
+      console.error('Firebase is not initialized');
+      return null;
+    }
     const docRef = doc(db, 'users', uid);
     const docSnap = await getDoc(docRef);
     

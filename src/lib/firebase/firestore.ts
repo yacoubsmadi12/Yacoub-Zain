@@ -4,13 +4,13 @@ import type { UserProfile, Word, QuizResult, Achievement } from '@/types';
 
 // Create a new user profile document
 export const createUserProfile = (uid: string, data: UserProfile) => {
-  return setDoc(doc(db, 'users', uid), data);
+  return setDoc(doc(db!, 'users', uid), data);
 };
 
 // Get a user profile (CLIENT-SIDE ONLY)
 // Used during sign-in with Google to check if a profile exists.
 export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {
-  const docRef = doc(db, 'users', uid);
+  const docRef = doc(db!, 'users', uid);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     return docSnap.data() as UserProfile;
@@ -21,20 +21,20 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
 
 // Update a user profile
 export const updateUserProfile = (uid: string, data: Partial<UserProfile>) => {
-    const userDocRef = doc(db, 'users', uid);
+    const userDocRef = doc(db!, 'users', uid);
     return setDoc(userDocRef, data, { merge: true });
 };
 
 
 // Add a word
 export const addWord = (wordData: Omit<Word, 'id'>) => {
-  const wordsCollection = collection(db, 'words');
+  const wordsCollection = collection(db!, 'words');
   return addDoc(wordsCollection, wordData);
 };
 
 // Log an admin action
 export const logAdminAction = (adminId: string, action: string, details: object) => {
-    const logsCollection = collection(db, 'admin_logs');
+    const logsCollection = collection(db!, 'admin_logs');
     return addDoc(logsCollection, {
         adminId,
         action,
@@ -44,7 +44,7 @@ export const logAdminAction = (adminId: string, action: string, details: object)
 };
 
 export const saveQuizResult = (resultData: Omit<QuizResult, 'id' | 'date'>) => {
-  const resultsCollection = collection(db, 'quiz_results');
+  const resultsCollection = collection(db!, 'quiz_results');
   return addDoc(resultsCollection, {
     ...resultData,
     date: new Date().toISOString().split('T')[0] // YYYY-MM-DD
@@ -53,7 +53,7 @@ export const saveQuizResult = (resultData: Omit<QuizResult, 'id' | 'date'>) => {
 
 export const getArchivedWords = async (department: string): Promise<Word[]> => {
   const q = query(
-    collection(db, 'words'),
+    collection(db!, 'words'),
     where('department', '==', department),
     orderBy('date', 'desc')
   );
@@ -71,7 +71,7 @@ const allAchievements: Omit<Achievement, 'unlocked'>[] = [
 ];
 
 export const getUserProgress = async (userId: string) => {
-    const quizResultsQuery = query(collection(db, 'quiz_results'), where('userId', '==', userId), orderBy('date', 'desc'));
+    const quizResultsQuery = query(collection(db!, 'quiz_results'), where('userId', '==', userId), orderBy('date', 'desc'));
 
     const quizResultsSnapshot = await getDocs(quizResultsQuery);
 

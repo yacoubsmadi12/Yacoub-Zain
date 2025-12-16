@@ -1,0 +1,44 @@
+09:35:23.815 Running build in Washington, D.C., USA (East) – iad1
+09:35:23.816 Build machine configuration: 2 cores, 8 GB
+09:35:23.825 Cloning github.com/yacoubsmadi12/Yacoub-Zain (Branch: main, Commit: 0f255c0)
+09:35:23.826 Skipping build cache, deployment was triggered without cache.
+09:35:24.108 Cloning completed: 282.000ms
+09:35:24.496 Running "vercel build"
+09:35:25.481 Vercel CLI 50.0.1
+09:35:25.803 Installing dependencies...
+09:35:51.468 
+09:35:51.469 added 907 packages in 25s
+09:35:51.470 
+09:35:51.470 99 packages are looking for funding
+09:35:51.470   run `npm fund` for details
+09:35:51.546 Detected Next.js version: 15.3.3
+09:35:51.554 Running "npm run build"
+09:35:51.664 
+09:35:51.664 > nextn@0.1.0 build
+09:35:51.664 > NODE_ENV=production next build
+09:35:51.665 
+09:35:52.288 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+09:35:52.289 This information is used to shape Next.js' roadmap and prioritize features.
+09:35:52.289 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+09:35:52.290 https://nextjs.org/telemetry
+09:35:52.290 
+09:35:52.378    ▲ Next.js 15.3.3
+09:35:52.379 
+09:35:52.403    Creating an optimized production build ...
+09:36:29.664  ✓ Compiled successfully in 33.0s
+09:36:29.669    Linting and checking validity of types ...
+09:36:40.307 Failed to compile.
+09:36:40.308 
+09:36:40.308 ./src/app/actions/get-archived-words-action.ts:10:22
+09:36:40.308 Type error: Argument of type 'FirebaseApp | null' is not assignable to parameter of type 'FirebaseApp | undefined'.
+09:36:40.309   Type 'null' is not assignable to type 'FirebaseApp | undefined'.
+09:36:40.309 
+09:36:40.309 [0m [90m  8 |[39m[0m
+09:36:40.309 [0m [90m  9 |[39m [90m// NOTE: This is a workaround to get the auth instance on the server.[39m[0m
+09:36:40.309 [0m[31m[1m>[22m[39m[90m 10 |[39m [36mconst[39m auth [33m=[39m getAuth(app)[33m;[39m[0m
+09:36:40.309 [0m [90m    |[39m                      [31m[1m^[22m[39m[0m
+09:36:40.309 [0m [90m 11 |[39m[0m
+09:36:40.310 [0m [90m 12 |[39m [36mexport[39m [36masync[39m [36mfunction[39m getArchivedWordsAction()[33m:[39m [33mPromise[39m[33m<[39m[33mWord[39m[][33m>[39m {[0m
+09:36:40.310 [0m [90m 13 |[39m     [36mtry[39m {[0m
+09:36:40.360 Next.js build worker exited with code: 1 and signal: null
+09:36:40.383 Error: Command "npm run build" exited with 1

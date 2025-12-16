@@ -14,10 +14,15 @@ import { generateWordOfTheDay } from '@/ai/flows/generate-word-of-the-day-flow';
 export async function getWordOfTheDayAction(department: string): Promise<Word | null> {
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
+  if (!db) {
+    console.error('Firebase is not initialized');
+    return null;
+  }
+
   try {
     const fetchWord = async (dept: string) => {
       const q = query(
-        collection(db, 'words'),
+        collection(db!, 'words'),
         where('department', '==', dept),
         where('date', '==', today),
         limit(1)
@@ -59,7 +64,7 @@ export async function getWordOfTheDayAction(department: string): Promise<Word | 
       date: today,
     };
 
-    const docRef = await addDoc(collection(db, 'words'), newWordData);
+    const docRef = await addDoc(collection(db!, 'words'), newWordData);
     console.log(`New word "${generatedWord.word}" saved with ID: ${docRef.id}`);
 
     return { id: docRef.id, ...newWordData };
