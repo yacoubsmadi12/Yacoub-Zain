@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { getUserProgressAction } from '@/app/actions/get-user-progress-action';
+import { getUserProgress } from '@/lib/firebase/firestore';
 import type { QuizResult, Achievement } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BarChart, Flame, Target, Trophy, TrendingUp } from "lucide-react";
@@ -30,11 +30,21 @@ export function ProgressClientPage() {
     useEffect(() => {
         if (user?.uid) {
             startTransition(async () => {
-                const data = await getUserProgressAction(user.uid);
-                if (data) {
-                    setProgress(data as ProgressData);
-                } else {
-                    // Handle case where no data is returned (e.g., new user)
+                try {
+                    const data = await getUserProgress(user.uid);
+                    if (data) {
+                        setProgress(data as ProgressData);
+                    } else {
+                        setProgress({
+                            wordsLearned: 0,
+                            quizAverage: 0,
+                            streak: 0,
+                            quizResults: [],
+                            achievements: []
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error fetching user progress:", error);
                     setProgress({
                         wordsLearned: 0,
                         quizAverage: 0,
@@ -44,7 +54,7 @@ export function ProgressClientPage() {
                     });
                 }
                 if (progressUpdated) {
-                    setProgressUpdated(false); // Reset the flag after updating
+                    setProgressUpdated(false);
                 }
             });
         }
