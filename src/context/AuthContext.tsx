@@ -4,7 +4,7 @@ import { createContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged, getIdToken } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import type { AppUser, UserProfile } from '@/types';
-import { getUserProfileAction } from '@/app/actions/get-user-profile-action';
+import { getUserProfile } from '@/lib/firebase/firestore';
 
 
 interface AuthContextType {
@@ -34,9 +34,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshUserProfile = async () => {
     if (user) {
-      const profile = await getUserProfileAction(user.uid);
-      if (profile) {
-        setUser(prevUser => prevUser ? { ...prevUser, profile } : null);
+      try {
+        const profile = await getUserProfile(user.uid);
+        if (profile) {
+          setUser(prevUser => prevUser ? { ...prevUser, profile } : null);
+        }
+      } catch (error) {
+        console.error("Error refreshing user profile:", error);
       }
     }
   }
@@ -49,12 +53,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const profile = await getUserProfileAction(firebaseUser.uid);
-        const appUser: AppUser = {
-          ...firebaseUser,
-          profile: profile || undefined,
-        };
-        setUser(appUser);
+        try {
+          const profile = await getUserProfile(firebaseUser.uid);
+          const appUser: AppUser = {
+            ...firebaseUser,
+            profile: profile || undefined,
+          };
+          setUser(appUser);
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+          const appUser: AppUser = {
+            ...firebaseUser,
+            profile: undefined,
+          };
+          setUser(appUser);
+        }
       } else {
         setUser(null);
       }
