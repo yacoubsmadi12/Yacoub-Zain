@@ -1,0 +1,106 @@
+/**
+ * @description This ruleset enforces a strict user-ownership model for user profiles and allows admins to manage questions and view user answers.
+ * @dataStructure
+ *  - /users/{userId}: Stores public user profiles.  Access is restricted to the owner.
+ *  - /admins/{adminId}:  Stores admin user IDs. Read-only for admins.
+ *  - /questions/{questionId}: Stores quiz questions. Only admins can manage this collection.
+ *  - /user_answers/{answerId}: Stores user quiz submissions. Only admins can read this collection.
+ * @keySecurityDecisions
+ *  - User profiles are private and only accessible to the user themselves.  No user listing is allowed.
+ *  - Only authenticated admins can manage questions.
+ *  - Users cannot create, update or delete their own answers; this is handled by the application itself.  The rules only restrict access.
+ *  - No public data is exposed.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to user profiles.  Only the authenticated user can read or update their own profile.
+     * @path /users/{userId}
+     * @allow (get) User i04G2gdbyvOwe6QwRcpKK9OpFKo2 can read their own profile.
+     * @allow (create) User i04G2gdbyvOwe6QwRcpKK9OpFKo2 can create their own profile.
+     * @allow (update) User i04G2gdbyvOwe6QwRcpKK9OpFKo2 can update their own profile.
+     * @allow (delete) User i04G2gdbyvOwe6QwRcpKK9OpFKo2 can delete their own profile.
+     * @deny (get) User otherUser cannot read User i04G2gdbyvOwe6QwRcpKK9OpFKo2 profile.
+     * @deny (create) User otherUser cannot create User i04G2gdbyvOwe6QwRcpKK9OpFKo2 profile.
+     * @deny (update) User otherUser cannot update User i04G2gdbyvOwe6QwRcpKK9OpFKo2 profile.
+     * @deny (delete) User otherUser cannot delete User i04G2gdbyvOwe6QwRcpKK9OpFKo2 profile.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Restricts access to the admins collection. Only authenticated admins can read this data.
+     * @path /admins/{adminId}
+     * @allow (get) Admin can get the admin data
+     * @deny (create) Non-admin cannot create admin data.
+     * @deny (update) Non-admin cannot update admin data.
+     * @deny (delete) Non-admin cannot delete admin data.
+     * @principle Enforces admin-only access.
+     */
+    match /admins/{adminId} {
+      allow get: if isAdmin();
+      allow list: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Controls access to quiz questions. Only admins can create, update, or delete questions.  Anyone can read.
+     * @path /questions/{questionId}
+     * @allow (get) Any user can read questions.
+     * @allow (create) Admin can create questions.
+     * @allow (update) Admin can update questions.
+     * @allow (delete) Admin can delete questions.
+     * @deny (create) Non-admin cannot create questions.
+     * @deny (update) Non-admin cannot update questions.
+     * @deny (delete) Non-admin cannot delete questions.
+     * @principle Enforces admin-only writes, public reads.
+     */
+    match /questions/{questionId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Restricts access to user quiz submissions. Only admins can read the answers.
+     * @path /user_answers/{answerId}
+     * @allow (get) Admin can read user answers.
+     * @deny (create) User cannot create the answer
+     * @deny (update) User cannot update the answer
+     * @deny (delete) User cannot delete the answer
+     * @principle Enforces admin-only reads.
+     */
+    match /user_answers/{answerId} {
+      allow get: if isAdmin();
+      allow list: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+
+  // Helper functions
+  function isSignedIn() {
+    return request.auth != null;
+  }
+
+  function isOwner(userId) {
+    return isSignedIn() && request.auth.uid == userId;
+  }
+
+  function isAdmin() {
+    return isSignedIn() && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.exists();
+  }
+}
