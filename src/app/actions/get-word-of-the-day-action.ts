@@ -64,10 +64,16 @@ export async function getWordOfTheDayAction(department: string): Promise<Word | 
       date: today,
     };
 
-    const docRef = await addDoc(collection(db!, 'words'), newWordData);
-    console.log(`New word "${generatedWord.word}" saved with ID: ${docRef.id}`);
-
-    return { id: docRef.id, ...newWordData };
+    try {
+      const docRef = await addDoc(collection(db!, 'words'), newWordData);
+      console.log(`New word "${generatedWord.word}" saved with ID: ${docRef.id}`);
+      return { id: docRef.id, ...newWordData };
+    } catch (saveError) {
+      console.warn('Could not save word to cache, returning generated word:', saveError);
+      // Return the generated word without saving - still show it to the user
+      // In production, this could be cached locally or in-memory
+      return { id: 'temp-' + Date.now(), ...newWordData };
+    }
 
   } catch (error) {
     console.error("Error in getWordOfTheDayAction: ", error);
